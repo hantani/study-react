@@ -8,17 +8,38 @@ import useSWR from 'swr';
 import { Link } from 'react-router-dom';
 
 const LogIn = () => {
-  const { data: userData, error, mutate } = useSWR();
-  const [logInError, setLogInError] = useState();
+  // const { data: userData, error, mutate } = useSWR();
+  const [logInError, setLogInError] = useState(false);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
-  const onSubmit = useCallback(() => {}, []);
+  const onSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      setLogInError(false);
+      axios
+        .post(
+          '/api/users/login',
+          { email, password },
+          {
+            withCredentials: true,
+          },
+        )
+        .then(() => {
+          console.log('성공');
+        })
+        .catch((error) => {
+          console.dir(error);
+          setLogInError(error.response?.status === 401);
+        });
+    },
+    [email, password],
+  );
 
-  console.log(error, userData);
-  if (!error && userData) {
-    console.log('로그인됨', userData);
-    return <Redirect to="/workspace/sleact/channel/일반" />;
-  }
+  // console.log(error, userData);
+  // if (!error && userData) {
+  //   console.log('로그인됨', userData);
+  //   return <Redirect to="/workspace/sleact/channel/일반" />;
+  // }
 
   return (
     <div id="container">
